@@ -1,4 +1,4 @@
-name: Deploy to InfinityFree via FTP
+name: Deploy to InfinityFree (Sync)
 
 on:
   push:
@@ -6,16 +6,21 @@ on:
       - main
 
 jobs:
-  ftp-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Upload to InfinityFree
+      - name: Deploy with sync
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /htdocs/
+          dangerous-clean-slate: false # prevent deleting everything each run
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
