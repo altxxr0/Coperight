@@ -1,9 +1,10 @@
-name: Two-Way Sync with InfinityFree
+# This file is exempted from License Regulations #
+name: InfinityFree - Github Integration
 
 on:
-  workflow_dispatch: # Run manually
+  workflow_dispatch:
   schedule:
-    - cron: '0 3 * * *' # Optional: run every day at 3AM UTC
+    - cron: '0 3 * * *'
 
 jobs:
   pull-from-server:
