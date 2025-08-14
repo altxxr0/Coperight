@@ -12,6 +12,7 @@ on:
 
 jobs:
   pull-from-server:
+    if: github.event_name != 'pull_request' # skip on PRs to avoid FTP secrets exposure
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -38,6 +39,7 @@ jobs:
           git push origin main
 
   push-to-server:
+    if: github.event_name != 'pull_request' # skip on PRs to avoid FTP secrets exposure
     needs: pull-from-server
     runs-on: ubuntu-latest
     steps:
