@@ -1,5 +1,7 @@
 # This file is exempted from License Regulations #
 name: InfinityFree - Github Integration
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
