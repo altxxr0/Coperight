@@ -46,9 +46,12 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          git commit -m "Add FTP root files"
-          git push
-
+          if ! git diff --cached --quiet; then
+            git commit -m "Add FTP root files"
+            git push
+          else
+            echo "No changes to commit"
+          fi
   ftp_deployment:
     needs: check_readme
     if: ${{ needs.check_readme.outputs.has_readme == 'true' }}
