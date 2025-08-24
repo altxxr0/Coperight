@@ -6,8 +6,26 @@ on:
       - main
 
 jobs:
+  check_readme:
+    runs-on: ubuntu-latest
+    outputs:
+      has_readme: ${{ steps.check.outputs.has_readme }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check for README.md
+        id: check
+        run: |
+          if [ -f "README.md" ] || [ -f "readme.md" ]; then
+            echo "has_readme=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_readme=false" >> $GITHUB_OUTPUT
+          fi
+
   ftp_initialization:
-    if: "!fileExists('README.md')" # pseudo check; will implement via script
+    needs: check_readme
+    if: ${{ needs.check_readme.outputs.has_readme == 'false' }}
     name: FTP Initialization
     runs-on: ubuntu-latest
     steps:
@@ -23,13 +41,9 @@ jobs:
           mirror --verbose --only-newer --parallel=4 --continue /
           EOF
 
-      - name: Prevent Git from creating submodules in htdocs
-        run: |
-          git config --global submodule.recurse false
-          git rm --cached -r htdocs || echo "No htdocs folder to process"
-
   ftp_deployment:
-    if: "fileExists('README.md')" # pseudo check; will implement via script
+    needs: check_readme
+    if: ${{ needs.check_readme.outputs.has_readme == 'true' }}
     name: FTP Deployment
     runs-on: ubuntu-latest
     steps:
