@@ -1,65 +1,57 @@
-# This file is exempted from License Regulations #
-name: InfinityFree - Github Integration
-permissions:
-  contents: write
+name: FTP Workflow
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 3 * * *'
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  pull-from-server:
-    if: github.event_name != 'pull_request' # skip on PRs to avoid FTP secrets exposure
+  ftp_initialization:
+    if: "!fileExists('README.md')" # pseudo check; will implement via script
+    name: FTP Initialization
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          submodules: false 
-          fetch-depth: 0
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Install LFTP
+      - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Download from InfinityFree
+      - name: Download FTP Root Contents
         run: |
           lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<EOF
-          # Mirror just the htdocs directory (InfinityFree only allows /htdocs)
-          mirror --verbose /htdocs ./htdocs --only-newer --parallel=5 --exclude-glob .git*
-          bye
+          mirror --verbose --only-newer --parallel=4 --continue /
           EOF
 
-      - name: Commit and push changes
+      - name: Prevent Git from creating submodules in htdocs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git diff --quiet && git diff --staged --quiet || git commit -m "Sync from InfinityFree"
-          git push origin main
+          git config --global submodule.recurse false
+          git rm --cached -r htdocs || echo "No htdocs folder to process"
 
-  push-to-server:
-    if: github.event_name != 'pull_request'
-    needs: pull-from-server
+  ftp_deployment:
+    if: "fileExists('README.md')" # pseudo check; will implement via script
+    name: FTP Deployment
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Deploy with FTP-Deploy-Action
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /htdocs/
-          dangerous-clean-slate: false
-          exclude: |
-            /*.*             # exclude all root-level files
-            /.??*            # exclude hidden dotfiles at root (.gitignore, .env, etc.)
-            /.github/**      # exclude .github folder
-            /node_modules/** # exclude node_modules folder
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Delete FTP Root Folder Contents
+        run: |
+          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<EOF
+          # List all root-level folders
+          cls -1
+          # Delete contents inside each root folder
+          for dir in $(cls -1); do
+            mirror --delete --only-missing --verbose --continue "$dir" "$dir"
+          done
+          EOF
+
+      - name: Upload Repository to FTP Root
+        run: |
+          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<EOF
+          mirror --reverse --verbose --delete --parallel=4 ./ /
+          EOF
