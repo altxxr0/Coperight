@@ -61,12 +61,22 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: Sync new FTP root folders
+        run: |
+          NEW_FOLDERS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1 --dirs; bye")
+          for folder in $NEW_FOLDERS; do
+            if [ ! -d "$folder" ]; then
+              echo "Downloading new root folder: $folder"
+              lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<EOF
+              mirror --verbose --continue /$folder ./$folder
+              EOF
+            fi
+          done
+
       - name: Delete FTP Root Folder Contents
         run: |
           lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<EOF
-          # List all root-level folders
           cls -1
-          # Delete contents inside each root folder
           for dir in $(cls -1); do
             mirror --delete --only-missing --verbose --continue "$dir" "$dir"
           done
