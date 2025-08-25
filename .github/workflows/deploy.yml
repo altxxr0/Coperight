@@ -69,13 +69,10 @@ jobs:
       - name: Sync new FTP root folders
         run: |
           NEW_FOLDERS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1 --dirs; bye")
-          for folder in $NEW_FOLDERS; do
+            for folder in $NEW_FOLDERS; do
             if [ ! -d "$folder" ]; then
               echo "Downloading new root folder: $folder"
-              lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<'EOF'
-              mirror --verbose --continue /$folder ./$folder
-              bye
-              EOF
+              lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --verbose --continue /$folder ./$folder; bye"
             fi
           done
 
