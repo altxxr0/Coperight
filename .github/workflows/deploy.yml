@@ -68,11 +68,16 @@ jobs:
 
       - name: Sync new FTP root folders
         run: |
-          NEW_FOLDERS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1 --dirs; bye")
-            for folder in $NEW_FOLDERS; do
-            if [ ! -d "$folder" ]; then
-              echo "Downloading new root folder: $folder"
-              lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --verbose --continue /$folder ./$folder; bye"
+          NEW_FOLDERS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1; bye")
+          for folder in $NEW_FOLDERS; do
+            # Skip files (only handle folders)
+            if lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cd $folder; bye" 2>/dev/null; then
+              if [ ! -d "$folder" ]; then
+                echo "Downloading new root folder: $folder"
+                lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --verbose --continue /$folder ./$folder; bye"
+              fi
+            else
+              echo "Skipping file: $folder"
             fi
           done
 
