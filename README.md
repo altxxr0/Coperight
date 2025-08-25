@@ -1,9 +1,11 @@
 # Coperight
 <img width="1266" height="636" alt="Coperight" src="https://github.com/user-attachments/assets/fdf04ecd-79ea-4421-bfe9-805cb86ad3a5" />
 
-Coperight is an interactive quiz game about Copywrite and Plagiarism,
+**Coperight** is an interactive quiz game about Copywrite and Plagiarism,
 An Educational Web Application that allows students to test their knowledge on 
 Copywrite and the Prevention of Copywrite
+
+🔴 Live site: [http://coperight.rf.gd/](http://coperight.rf.gd/)
 
 > 📃 An iLS Requirment for our Web/Computer Programming 4 (.NET Technology) & Web/Computer Programming 5 (.NET Technology) 
 <sub> { 1st & 2nd Quarter | 1st Term } </sub>
