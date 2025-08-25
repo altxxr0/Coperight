@@ -83,12 +83,15 @@ jobs:
 
       - name: Delete FTP Root Folder Contents
         run: |
-          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<'EOF'
-          for dir in $(cls -1); do
-            mirror --delete --only-missing --verbose --continue "$dir" "$dir"
+          DIRS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1; bye")
+            for dir in $DIRS; do
+              if lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cd $dir; bye" 2>/dev/null; then
+                echo "Cleaning directory: $dir"
+                lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --delete --only-missing --verbose --continue /$dir $dir; bye"
+              else
+                echo "Skipping file: $dir"
+              fi
           done
-          bye
-          EOF
 
       - name: Upload Repository to FTP Root
         run: |
