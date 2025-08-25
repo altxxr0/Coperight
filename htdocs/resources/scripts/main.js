@@ -1,0 +1,1 @@
+Example JavaScript, add via script src.
