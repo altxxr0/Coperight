@@ -34,7 +34,7 @@ jobs:
           if [ "${{ steps.check_readme.outputs.has_readme }}" == "false" ]; then
             # Initialization: download FTP root contents
             lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<'EOF'
-            mirror --verbose --only-newer --parallel=4 --continue /
+            mirror --verbose --only-newer --parallel=4 ./ /
             bye
             EOF
           else
