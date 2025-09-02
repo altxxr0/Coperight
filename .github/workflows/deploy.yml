@@ -6,16 +6,17 @@ on:
       - main
 
 jobs:
-  check_readme:
+  check_readme_and_ftp:
     runs-on: ubuntu-latest
-    outputs:
-      has_readme: ${{ steps.check.outputs.has_readme }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Check for README.md
-        id: check
+        id: check_readme
         run: |
           if [ -f "README.md" ] || [ -f "readme.md" ]; then
             echo "has_readme=true" >> $GITHUB_OUTPUT
@@ -23,79 +24,56 @@ jobs:
             echo "has_readme=false" >> $GITHUB_OUTPUT
           fi
 
-  ftp_initialization:
-    needs: check_readme
-    if: ${{ needs.check_readme.outputs.has_readme == 'false' }}
-    name: FTP Initialization
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Download FTP Root Contents
+      - name: FTP Initialization / Deployment
         run: |
-          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<'EOF'
-          mirror --verbose --only-newer --parallel=4 --continue /
-          bye
-          EOF
+          # FTP variables
+          FTP_USER="${{ secrets.FTP_USERNAME }}"
+          FTP_PASS="${{ secrets.FTP_PASSWORD }}"
+          FTP_HOST="${{ secrets.FTP_HOST }}"
 
-      - name: Commit and push FTP files
+          if [ "${{ steps.check_readme.outputs.has_readme }}" == "false" ]; then
+            # Initialization: download FTP root contents
+            lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<'EOF'
+            mirror --verbose --only-newer --parallel=4 --continue /
+            bye
+            EOF
+          else
+            # Deployment: sync new root folders
+            NEW_FOLDERS=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "cls -1; bye")
+            for folder in $NEW_FOLDERS; do
+              if lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "cd $folder; bye" 2>/dev/null; then
+                if [ ! -d "$folder" ]; then
+                  echo "Downloading new root folder: $folder"
+                  lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "mirror --verbose --continue /$folder ./$folder; bye"
+                fi
+              fi
+            done
+
+            # Clean and upload FTP root contents
+            DIRS=$(lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "cls -1; bye")
+            for dir in $DIRS; do
+              if lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "cd $dir; bye" 2>/dev/null; then
+                echo "Cleaning directory: $dir"
+                lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" -e "mirror --delete --only-missing --verbose --continue /$dir $dir; bye"
+              fi
+            done
+
+            # Upload repository to FTP root
+            lftp -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" <<'EOF'
+            mirror --reverse --verbose --delete --parallel=4 ./ /
+            bye
+            EOF
+          fi
+
+      - name: Commit and push FTP changes
         run: |
           git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.email "github-actions@users.noreply.github.com"
           git add .
           if ! git diff --cached --quiet; then
-            git commit -m "Add FTP root files"
+            git commit -m "Automated FTP sync [ci skip]"
             git push
           else
             echo "No changes to commit"
-          fi
-
-  ftp_deployment:
-    needs: check_readme
-    if: ${{ needs.check_readme.outputs.has_readme == 'true' }}
-    name: FTP Deployment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Sync new FTP root folders
-        run: |
-          NEW_FOLDERS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1; bye")
-          for folder in $NEW_FOLDERS; do
-            # Skip files (only handle folders)
-            if lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cd $folder; bye" 2>/dev/null; then
-              if [ ! -d "$folder" ]; then
-                echo "Downloading new root folder: $folder"
-                lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --verbose --continue /$folder ./$folder; bye"
-              fi
-            else
-              echo "Skipping file: $folder"
-            fi
-          done
-
-      - name: Delete FTP Root Folder Contents
-        run: |
-          DIRS=$(lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cls -1; bye")
-            for dir in $DIRS; do
-              if lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "cd $dir; bye" 2>/dev/null; then
-                echo "Cleaning directory: $dir"
-                lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} -e "mirror --delete --only-missing --verbose --continue /$dir $dir; bye"
-              else
-                echo "Skipping file: $dir"
-              fi
-          done
-
-      - name: Upload Repository to FTP Root
-        run: |
-          lftp -u "${{ secrets.FTP_USERNAME }}","${{ secrets.FTP_PASSWORD }}" ${{ secrets.FTP_HOST }} <<'EOF'
-          mirror --reverse --verbose --delete --parallel=4 ./ /
-          bye
-          EOF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
