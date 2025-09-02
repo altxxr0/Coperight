@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Completed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .completion-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #score-message {
+      font-size: 20px;
+      margin: 15px 0;
+      font-weight: bold;
+      color: #444;
+    }
+
+    button {
+      background: #4facfe;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #00c6ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="completion-container">
+    <h1>🎮 Game Over!</h1>
+    <p id="score-message">Loading score...</p>
+    <button id="retry-btn">Retry Quiz</button>
+    <button id="home-btn">Go to Home</button>
+  </div>
+
+  <script>
+    // Get score from localStorage
+    let score = localStorage.getItem("quizScore") || 0;
+    let total = localStorage.getItem("quizTotal") || 0;
+
+    document.getElementById("score-message").textContent = `You scored ${score} out of ${total}`;
+
+    // Retry
+    document.getElementById("retry-btn").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    // Home (if you have a homepage)
+    document.getElementById("home-btn").addEventListener("click", () => {
+      window.location.href = "index.html"; // change if you make a separate homepage
+    });
+  </script>
+</body>
+</html>
