@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #ffcc00;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ffaa00;
+    }
+    .instructions {
+      margin-top: 20px;
+      max-width: 400px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ultimate Quiz Challenge</h1>
+  <button onclick="startQuiz()">Start Quiz</button>
+  <div class="instructions">
+    <p>Test your knowledge across multiple categories!<br>
+       You’ll have 10 seconds to answer each question.<br>
+       Good luck!</p>
+  </div>
+
+  <script>
+    function startQuiz() {
+      // Redirect to quiz page (quiz.html)
+      window.location.href = "quiz.html";
+    }
+  </script>
+</body>
+</html>
