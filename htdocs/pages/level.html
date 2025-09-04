@@ -5,18 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Game</title>
   <style>
+    .logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 100px;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      background: linear-gradient(135deg, hsl(0, 100%, 50%), hwb(26 2% 4%));
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      overflow: hidden;
+      margin: 50;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      width: 1500px;
+      height: 800px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        hwb(0 49% 50% / 0.8) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+      filter: blur(80px);
+      z-index: -1;
     }
 
     .container {
-      background: white;
+      background: #05ea09;
       padding: 30px;
       border-radius: 12px;
       text-align: center;
@@ -45,11 +71,36 @@
       padding: 10px;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, color 0.3s;
     }
 
     .options li:hover {
       background: #d9f0ff;
+    }
+
+    /* Highlight animations */
+    .correct {
+      background: #4CAF50 !important; /* green */
+      color: white !important;
+      animation: pulseCorrect 0.6s ease;
+    }
+
+    .wrong {
+      background: #F44336 !important; /* red */
+      color: white !important;
+      animation: pulseWrong 0.6s ease;
+    }
+
+    @keyframes pulseCorrect {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulseWrong {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.95); }
+      100% { transform: scale(1); }
     }
 
     .btn {
@@ -57,7 +108,7 @@
       border: none;
       color: white;
       padding: 10px 20px;
-      margin-top: 15px;
+      margin: 10px 5px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
@@ -87,7 +138,6 @@
       <h1>Quiz Game</h1>
       <div class="question" id="question">Question text here</div>
       <ul class="options" id="options"></ul>
-      <button class="btn" id="next-btn">Next</button>
     </div>
 
     <!-- Completion Screen -->
@@ -95,7 +145,13 @@
       <h1>🎉 Quiz Completed!</h1>
       <p id="score-message"></p>
       <button class="btn" id="retry-btn">Retry Quiz</button>
+      <button class="btn" id="home-btn">Home</button>
     </div>
+  </div>
+
+  <!-- Logo -->
+  <div class="logo">
+    <img src="C:\Users\april\Downloads\CopeRightLogo.png" alt="My Logo" width="150" height="auto">  
   </div>
 
   <script>
@@ -125,9 +181,9 @@
     const completionScreen = document.getElementById("completion-screen");
     const questionEl = document.getElementById("question");
     const optionsEl = document.getElementById("options");
-    const nextBtn = document.getElementById("next-btn");
     const scoreMessage = document.getElementById("score-message");
     const retryBtn = document.getElementById("retry-btn");
+    const homeBtn = document.getElementById("home-btn");
 
     // Load a question
     function loadQuestion() {
@@ -137,37 +193,36 @@
       q.options.forEach(option => {
         let li = document.createElement("li");
         li.textContent = option;
-        li.addEventListener("click", () => selectOption(option));
+        li.addEventListener("click", () => selectOption(li, option));
         optionsEl.appendChild(li);
       });
     }
 
-    // Select option
-    let selectedAnswer = null;
-    function selectOption(option) {
-      selectedAnswer = option;
-      // Highlight selection
-      const lis = optionsEl.querySelectorAll("li");
-      lis.forEach(li => {
-        li.style.background = (li.textContent === option) ? "#b3e5fc" : "#f1f1f1";
-      });
-    }
+    // Select option and highlight
+    function selectOption(element, option) {
+      const correctAnswer = quizData[currentQuestion].answer;
 
-    // Next button
-    nextBtn.addEventListener("click", () => {
-      if (!selectedAnswer) return alert("Please select an option!");
-      if (selectedAnswer === quizData[currentQuestion].answer) {
+      if (option === correctAnswer) {
+        element.classList.add("correct");
         score++;
-      }
-      currentQuestion++;
-      selectedAnswer = null;
-
-      if (currentQuestion < quizData.length) {
-        loadQuestion();
       } else {
-        showCompletion();
+        element.classList.add("wrong");
       }
-    });
+
+      // Disable all options after selection
+      const allOptions = optionsEl.querySelectorAll("li");
+      allOptions.forEach(li => li.style.pointerEvents = "none");
+
+      // Move to next question after delay
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+          loadQuestion();
+        } else {
+          showCompletion();
+        }
+      }, 1000); // 1 second delay
+    }
 
     // Show completion screen
     function showCompletion() {
@@ -178,6 +233,15 @@
 
     // Retry quiz
     retryBtn.addEventListener("click", () => {
+      score = 0;
+      currentQuestion = 0;
+      quizScreen.style.display = "block";
+      completionScreen.style.display = "none";
+      loadQuestion();
+    });
+
+    // Home button (restart quiz)
+    homeBtn.addEventListener("click", () => {
       score = 0;
       currentQuestion = 0;
       quizScreen.style.display = "block";
