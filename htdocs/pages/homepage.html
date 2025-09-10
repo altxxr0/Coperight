@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coperight</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #b8cdcd, #8f9192);
+      color: white;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content:  center;
+      align-items: center;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+       transition: color 0.5s ease;
+    }
+    .start-button {
+       background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    .start-button:hover {
+       transform: scale(1.08);
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+    .start-button:active {
+      transform: scale(0.96);
+    }
+    .instructions {
+      margin-top: 20px;
+      max-width: 400px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <h1 id = "Color Changing" >Welcome to Coperight</h1>
+
+  <button class="start-button">Start Quiz</button>
+
+  <div class="instructions">
+    <p>Test your knowledge and learn about plagiarism </p>
+  </div>
+
+  <script>
+     const text = document.getElementById("Color Changing");
+
+    function getRandomColor() {
+      // Generate a random hex color
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Change color every second
+    setInterval(() => {
+      text.style.color = getRandomColor();
+    }, 1000);
+
+    function startQuiz() {
+      // Redirect to quiz page (quiz.html)
+      window.location.href = "quiz.html";
+    }
+  </script>
+</body>
+</html>
