@@ -14,7 +14,7 @@
 
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, hsl(0, 100%, 50%), hwb(26 2% 4%));
+      background: linear-gradient(135deg, hsl(236, 90%, 33%), lab(17.89% 52.32 -72.14));
       display: flex;
       justify-content: center;
       align-items: center;
@@ -34,7 +34,7 @@
       border-radius: 50%;
       background: radial-gradient(
         circle,
-        hwb(0 49% 50% / 0.8) 0%,
+        oklab(48.019% 0.10824 -0.2361) 0%,
         rgba(255, 255, 255, 0) 70%
       );
       filter: blur(80px);
@@ -42,12 +42,12 @@
     }
 
     .container {
-      background: #05ea09;
+      background: hsl(182, 95%, 49%);
       padding: 30px;
       border-radius: 12px;
       text-align: center;
       width: 400px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 -12px 100px 10px lab(85.26% -53.19 -0.35);
     }
 
     h1 {
@@ -82,31 +82,31 @@
     .correct {
       background: #4CAF50 !important; /* green */
       color: white !important;
-      animation: pulseCorrect 0.6s ease;
+      animation: Correct 0.6s ease;
     }
 
     .wrong {
       background: #F44336 !important; /* red */
       color: white !important;
-      animation: pulseWrong 0.6s ease;
+      animation: Wrong 0.6s ease;
     }
 
-    @keyframes pulseCorrect {
+    @keyframes Correct {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
 
-    @keyframes pulseWrong {
+    @keyframes Wrong {
       0% { transform: scale(1); }
       50% { transform: scale(0.95); }
       100% { transform: scale(1); }
     }
 
     .btn {
-      background: #4facfe;
+      background: #ffffff;
       border: none;
-      color: white;
+      color: rgb(0, 0, 0);
       padding: 10px 20px;
       margin: 10px 5px;
       border-radius: 6px;
@@ -116,9 +116,12 @@
     }
 
     .btn:hover {
-      background: #00c6ff;
+      background: lch(37.92% 127.74 309.66);
+      color: white;
     }
 
+
+    
     #completion-screen {
       display: none;
     }
@@ -129,9 +132,36 @@
       font-weight: bold;
       color: #444;
     }
+
+    /* Wrong-answer GIF overlay */
+#wrong-gif-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;              /* hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#wrong-gif-overlay img {
+  max-width: 60%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+
   </style>
 </head>
 <body>
+ <div class = "bh">
+    
+ </div> 
+ 
   <div class="container">
     <!-- Quiz Screen -->
     <div id="quiz-screen">
@@ -151,26 +181,33 @@
 
   <!-- Logo -->
   <div class="logo">
-    <img src="C:\Users\april\Downloads\CopeRightLogo.png" alt="My Logo" width="150" height="auto">  
+    <img src="../resources/img/Coperight.png" alt="My Logo" width="150" height="auto">  
   </div>
+
+  <!-- Wrong-answer GIF overlay -->
+<div id="wrong-gif-overlay">
+  <img src="../resources/img/wrong-answer-harley-ross.gif" alt="Wrong Answer">
+</div>
+
+
 
   <script>
     // Quiz data
     const quizData = [
       {
-        question: "What is the capital of France?",
-        options: ["Berlin", "Madrid", "Paris", "Rome"],
-        answer: "Paris"
+        question: "What is Plagiarism",
+        options: ["???", "???", "???", "It is the act of taking a piece of work from someone else"],
+        answer: "It is the act of taking a piece of work from someone else"
       },
       {
-        question: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Jupiter", "Saturn"],
-        answer: "Mars"
+        question: "What is Plagiarism",
+        options: ["It is the act of taking a piece of work from someone else", "???", "???", "???"],
+        answer: "It is the act of taking a piece of work from someone else"
       },
       {
-        question: "What is 5 + 7?",
-        options: ["10", "12", "14", "15"],
-        answer: "12"
+        question: "What is Plagiarism",
+        options: ["???", "It is the act of taking a piece of work from someone else", "???", "???"],
+        answer: "It is the act of taking a piece of work from someone else"
       }
     ];
 
@@ -207,6 +244,7 @@
         score++;
       } else {
         element.classList.add("wrong");
+        showWrongGif();
       }
 
       // Disable all options after selection
@@ -248,6 +286,17 @@
       completionScreen.style.display = "none";
       loadQuestion();
     });
+
+ // Reference the overlay
+const wrongOverlay = document.getElementById("wrong-gif-overlay");
+
+// Show & hide the GIF
+function showWrongGif() {
+  wrongOverlay.style.display = "flex";
+  setTimeout(() => {
+    wrongOverlay.style.display = "none";
+  }, 1200); 
+}
 
     // Start quiz
     loadQuestion();
