@@ -141,32 +141,50 @@
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.4);
-  display: none;              /* hidden by default */
+  display: none;              
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
 #wrong-gif-overlay img {
-  max-width: 60%;
   height: auto;
+  width: 500px;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: 0 0 20px rgba(255, 1, 1, 0.96);
+}
+
+#correct-gif-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;              
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  
+}
+
+#correct-gif-overlay img {
+  height: auto;
+  width: auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgb(2, 248, 84);
 }
 
 
   </style>
 </head>
 <body>
- <div class = "bh">
-    
- </div> 
  
   <div class="container">
     <!-- Quiz Screen -->
     <div id="quiz-screen">
       <h1>Quiz Game</h1>
-      <div class="question" id="question">Question text here</div>
+      <div class="question" id="question"></div>
       <ul class="options" id="options"></ul>
     </div>
 
@@ -189,6 +207,9 @@
   <img src="../resources/img/wrong-answer-harley-ross.gif" alt="Wrong Answer">
 </div>
 
+<div id="correct-gif-overlay">
+  <img src= "../resources/img/nice.gif" alt="Correct Answer">
+</div>
 
 
   <script>
@@ -242,6 +263,7 @@
       if (option === correctAnswer) {
         element.classList.add("correct");
         score++;
+        showRightGif();
       } else {
         element.classList.add("wrong");
         showWrongGif();
@@ -297,6 +319,15 @@ function showWrongGif() {
     wrongOverlay.style.display = "none";
   }, 1200); 
 }
+
+const correctOverlay = document.getElementById("correct-gif-overlay");
+
+ function showRightGif() {
+    correctOverlay.style.display = "flex";    
+    setTimeout(() => {
+      correctOverlay.style.display = "none";
+    }, 1200);
+  }
 
     // Start quiz
     loadQuestion();
