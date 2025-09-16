@@ -5,34 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coperight</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: linear-gradient(to right, #b8cdcd, #8f9192);
-      color: white;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content:  center;
-      align-items: center;
-      margin: 0;
-    }
-      .navbar {
-      display: flex;
-      justify-content: space-between; /* space between left and right */
-      align-items: center;
-      background-color: #333;
-      padding: 10px 20px;
-      
-    }
+   body {
+     font-family: Arial, sans-serif;
+     text-align: center;
+  background: linear-gradient(
+    135deg,
+    hsl(236, 90%, 33%),
+    lab(17.89% 52.32 -72.14)
+  );
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 50px;
+  overflow: hidden;
+}
 
-    /* Name/logo on left */
-    .navbar .Website-Name {
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
+    body::before {
+      content: "";
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      width: 1500px;
+      height: 800px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        oklab(48.019% 0.10824 -0.2361) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+      filter: blur(80px);
+      z-index: -1;
     }
+    
+      
     h1 {
       font-size: 3em;
       margin-bottom: 20px;
@@ -63,47 +71,53 @@
       max-width: 400px;
       font-size: 1.1em;
     }
-
+    .logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 60px;
+}
+ p {
+  color:#32CD32;
+ }
    
   </style>
 </head>
 <body>
+
   <h1 id = "Color Changing" >Welcome to Coperight</h1>
 
   <button class="start-button">Start Quiz</button>
 
   <div class="instructions">
-    <p>Test your knowledge and learn about plagiarism </p>
+    <p>Challenge yourself and deepen your understanding of plagiarism  </p>
   </div>
 
-   <div class="navbar">
-    <div class="Website-Name">Coperight</div>
    
   </div>
 
+  <img src="../resources/img/Coperight.png" alt="My Logo" class="logo">
 
-  <script>
-     const text = document.getElementById("Color Changing");
 
-    function getRandomColor() {
-      // Generate a random hex color
-      const letters = "0123456789ABCDEF";
-      let color = "#";
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
+  
+    <script>
+  const text = document.getElementById("Color Changing");
 
-    // Change color every second
-    setInterval(() => {
-      text.style.color = getRandomColor();
-    }, 1000);
+  // Define your custom colors
+  const colors = ["#FFA500", "#99AABB", "#708090", "#FFFF00", "#FFC0CB"]; 
+  let index = 0;
 
-    function startQuiz() {
-      // Redirect to quiz page (quiz.html)
-      window.location.href = "quiz.html";
-    }
-  </script>
+  // Change to the next color every second
+  setInterval(() => {
+    text.style.color = colors[index];
+    index = (index + 1) % colors.length; // loop back to start
+  }, 1000);
+
+  function startQuiz() {
+    window.location.href = "quiz.html";
+  }
+</script>
+
+
 </body>
 </html>
