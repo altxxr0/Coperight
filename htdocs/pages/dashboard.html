@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+  <style>
+    body {
+     font-family: Arial, sans-serif;
+     text-align: center;
+     background: linear-gradient(
+       135deg,
+       hsl(236, 90%, 33%),
+       lab(17.89% 52.32 -72.14)
+     );
+     height: 100vh;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     margin: 50px;
+     overflow: hidden;
+   }
+
+   body::before {
+     content: "";
+     position: absolute;
+     bottom: -300px;
+     left: 50%;
+     width: 1500px;
+     height: 800px;
+     transform: translateX(-50%);
+     border-radius: 50%;
+     background: radial-gradient(
+       circle,
+       oklab(48.019% 0.10824 -0.2361) 0%,
+       rgba(255, 255, 255, 0) 70%
+     );
+     filter: blur(80px);
+     z-index: -1;
+   }
+
+    
+
+    .leaderboard {
+      background: linear-gradient(to bottom, #3a63e0, #142a99);
+      border-radius: 30px;
+      width: 300px;
+      padding: 20px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.4);
+    }
+
+    .leaderboard h2 {
+      text-align: center;
+      margin: 0 0 20px;
+      font-size: 24px;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .player {
+      background-color: #0d18f0;
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      box-shadow: inset 0px 2px 5px rgba(0,0,0,0.3);
+    }
+    header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  height: 60px;
+}
+
+   
+
+  </style>
+</head>
+<body>
+
+  <!-- Watermark / Logo -->
+  <header>
+  <img src="../resources/img/Coperight.png" alt="My Logo" class="logo">
+</header>
+
+
+  <!-- Leaderboard -->
+  <div class="leaderboard">
+    <h2>Leaderboard</h2>
+    <div id="player-list"></div>
+  </div>
+
+  <script>
+    
+    const players = [
+      { name: "Cyrus", score: 30 },
+      { name: "Nebab", score: 29 },
+      { name: "Mark", score: 25 },
+      { name: "Shane", score: 23 },
+      { name: "Faulve", score: 23 },
+      { name: "Belardo", score: 21 }
+    ];
+
+    const maxScore = 30; 
+    const playerList = document.getElementById("player-list");
+
+    
+    players.forEach(player => {
+      const div = document.createElement("div");
+      div.className = "player";
+      div.innerHTML = `<span>${player.name}</span><span>${player.score}/${maxScore}</span>`;
+      playerList.appendChild(div);
+    });
+  </script>
+
+</body>
+</html>
