@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Completed</title>
+  <style>
+    .logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 100px;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+       background: linear-gradient(135deg, hsl(236, 90%, 33%), lab(17.89% 52.32 -72.14));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      margin: 50;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      width: 1500px;
+      height: 800px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        oklab(48.019% 0.10824 -0.2361) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+      filter: blur(80px);
+      z-index: -1;
+    }
+
+    .container {
+      background: hsl(182, 95%, 49%);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      width: 400px;
+      box-shadow: 0 -12px 100px 10px lab(85.26% -53.19 -0.35);
+    }
+
+    .completion-container {
+      background: hsl(182, 95%, 49%);
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 -12px 100px 10px lab(85.26% -53.19 -0.35);
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #score-message {
+      font-size: 20px;
+      margin: 15px 0;
+      font-weight: bold;
+      color: #444;
+    }
+
+    button {
+      background: #ffffff;
+      border: none;
+      color: rgb(0, 0, 0);
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: lch(37.92% 127.74 309.66);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="completion-container">
+    <h1>🎮 Completed</h1>
+    <p id="score-message">Loading score...</p>
+    <button id="retry-btn">Retry Quiz</button>
+    <button id="home-btn">Go to Home</button>
+  </div>
+
+    <div class="logo">
+    <img src="../resources/img/Coperight.png" alt="My Logo" width="150" height="auto">  
+  </div>
+
+  <script>
+    // Get score from localStorage
+    let score = localStorage.getItem("quizScore") || 0;
+    let total = localStorage.getItem("quizTotal") || 0;
+
+    document.getElementById("score-message").textContent = `You scored ${score} out of ${total}`;
+
+    // Retry
+    document.getElementById("retry-btn").addEventListener("click", () => {
+      window.location.href = "level.html";
+    });
+
+    // Home (if you have a homepage)
+    document.getElementById("home-btn").addEventListener("click", () => {
+      window.location.href = "index.html"; // change if you make a separate homepage
+    });
+  </script>
+</body>
+</html>
