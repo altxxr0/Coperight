@@ -76,20 +76,7 @@
 
     .options li:hover {
       background: #d9f0ff;
-    }
-
-    /* Highlight animations */
-    .correct {
-      background: #4CAF50 !important; /* green */
-      color: white !important;
-      animation: Correct 0.6s ease;
-    }
-
-    .wrong {
-      background: #F44336 !important; /* red */
-      color: white !important;
-      animation: Wrong 0.6s ease;
-    }
+    } 
 
     @keyframes Correct {
       0% { transform: scale(1); }
@@ -216,18 +203,28 @@
     // Quiz data
     const quizData = [
       {
-        question: "What is Plagiarism",
+        question: "What is Plagiarism?",
         options: ["???", "???", "???", "It is the act of taking a piece of work from someone else"],
         answer: "It is the act of taking a piece of work from someone else"
       },
       {
-        question: "What is Plagiarism",
+        question: "What is Plagiarism?",
         options: ["It is the act of taking a piece of work from someone else", "???", "???", "???"],
         answer: "It is the act of taking a piece of work from someone else"
       },
       {
-        question: "What is Plagiarism",
+        question: "What is Plagiarism?",
         options: ["???", "It is the act of taking a piece of work from someone else", "???", "???"],
+        answer: "It is the act of taking a piece of work from someone else"
+      },
+      {
+        question: "What is Plagiarism?",
+        options: ["It is the act of taking a piece of work from someone else", "???", "???", "???"],
+        answer: "It is the act of taking a piece of work from someone else"
+      },
+      {
+        question: "What is Plagiarism?",
+        options: ["???", "???", "It is the act of taking a piece of work from someone else", "???"],
         answer: "It is the act of taking a piece of work from someone else"
       }
     ];
