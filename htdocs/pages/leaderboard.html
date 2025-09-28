@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+  <style>
+    body {
+     font-family: Arial, sans-serif;
+     text-align: center;
+     background: linear-gradient(
+       135deg,
+       hsl(236, 90%, 33%),
+       lab(17.89% 52.32 -72.14)
+     );
+     height: 100vh;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     margin: 50px;
+     overflow: hidden;
+   }
+
+   body::before {
+     content: "";
+     position: absolute;
+     bottom: -300px;
+     left: 50%;
+     width: 1500px;
+     height: 800px;
+     transform: translateX(-50%);
+     border-radius: 50%;
+     background: radial-gradient(
+       circle,
+       oklab(48.019% 0.10824 -0.2361) 0%,
+       rgba(255, 255, 255, 0) 70%
+     );
+     filter: blur(80px);
+     z-index: -1;
+   }
+
+    .leaderboard {
+      background: linear-gradient(to bottom, #FFB347, #FFA500);
+      border-radius: 30px;
+      width: 300px;
+      padding: 20px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.4);
+      max-height: 400px;       /* 👈 Limit height */
+      overflow-y: auto;        /* 👈 Enable vertical scroll */
+    }
+
+    .leaderboard::-webkit-scrollbar {
+      width: 8px;
+    }
+    .leaderboard::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.4);
+      border-radius: 6px;
+    }
+    .leaderboard::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .leaderboard h2 {
+      text-align: center;
+      margin: 0 0 20px;
+      font-size: 24px;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .player {
+      background-color: #E0FFFF;
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      box-shadow: inset 0px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .top-player {
+      background-color: #FFD700; /* Gold color */
+      color: black;
+      box-shadow: 0px 0px 12px 3px rgba(255, 215, 0, 0.8);
+    }
+
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      padding: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .logo {
+      height: 60px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Watermark / Logo -->
+  <header>
+    <img src="../resources/img/Coperight.png" alt="My Logo" class="logo">
+  </header>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard">
+    <h2>Leaderboard</h2>
+    <div id="player-list"></div>
+  </div>
+
+  <script>
+   const participants = [
+     ["Alice", 30],
+     ["Alex", 25],
+     ["Mark", 27],
+     ["Nebab", 28],
+     ["Shane", 25],
+     
+    
+   ];
+
+   // Sort by score (highest → lowest)
+   participants.sort((a, b) => b[1] - a[1]);
+
+   // Find highest score and top players
+   const highestScore = participants[0][1];
+   const topPlayers = participants.filter(p => p[1] === highestScore).map(p => p[0]);
+
+   // Render leaderboard
+   const playerList = document.getElementById("player-list");
+   participants.forEach(([name, score]) => {
+     playerList.innerHTML += `
+       <div class="player ${topPlayers.includes(name) ? "top-player" : ""}">
+         <span>${name}</span>
+         <span>${score}</span>
+       </div>
+     `;
+   });
+
+   console.log("Top participants:", topPlayers);
+   console.log("Highest score:", highestScore);
+  </script>
+
+</body>
+</html>
